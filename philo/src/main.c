@@ -23,7 +23,7 @@ void	*start(void *arg)
 	if (args()->nb_philo == 1)
 		return (one_case(p), NULL);
 	if ((p->id % 2) == 0)
-		usleep(100);	
+		usleep(100);
 	while (1)
 	{
 		if (args()->nb_times_e > 0 && p->n_meals >= args()->nb_times_e)
@@ -45,9 +45,9 @@ int	main(int ac, char **av)
 {
 	int i;
 	if (pars(ac, av) == false)
-	return (1);
+		return (1);
 	if (!innit_everything())
-	return (2);
+		return (2);
 	pthread_mutex_lock(&args()->god);
 	args()->stop = false;
 	args()->s_time = get_time();

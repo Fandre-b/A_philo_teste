@@ -62,7 +62,7 @@ bool	check_death(void)
 	{
 		timestamp = time_now();
 		pthread_mutex_lock(&args()->prio);
-		if ( timestamp - args()->philos[i].last_meal >= args()->time_to_d)
+		if (timestamp - args()->philos[i].last_meal >= args()->time_to_d)
 		{
 			if (!check_stop())
 				printf("%ld %d died\n", timestamp, i);

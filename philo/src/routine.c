@@ -73,9 +73,9 @@ void	eating(t_philo *p)
 	p->last_meal = time_now();
 	pthread_mutex_unlock(&args()->prio);
 	usleep(args()->time_to_e * 1000);
-	drop_forks(p);
 	pthread_mutex_lock(&args()->prio);
 	if (args()->nb_times_e > 0)
 		p->n_meals++;
 	pthread_mutex_unlock(&args()->prio);
+	drop_forks(p);
 }

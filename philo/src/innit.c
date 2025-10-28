@@ -20,7 +20,7 @@ bool	innit_threads(void)
 	while (i < args()->nb_philo)
 	{
 		if (pthread_create(args()->threads + i, NULL,
-						   &start, &args()->philos[i]))
+				&start, &args()->philos[i]))
 			return (false);
 		i++;
 	}
@@ -58,6 +58,7 @@ bool	innit_mutexes(void)
 bool	innit_structs(void)
 {
 	int		i;
+
 	args()->stop = true;
 	args()->threads = (pthread_t *)malloc((args()->nb_philo) * 8);
 	args()->routine_thread = (pthread_t *)malloc(8);
