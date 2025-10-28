@@ -28,7 +28,7 @@ typedef struct s_threads
 {
 	int		id;
 	int		n_meals;
-	int		last_meal;
+	long		last_meal;
 
 }		t_philo;
 
@@ -36,9 +36,9 @@ typedef struct s_threads
 typedef struct s_args
 {
 	int				nb_philo;
-	int				time_to_d;
-	int				time_to_e;
-	int				time_to_s;
+	long				time_to_d;
+	long				time_to_e;
+	long				time_to_s;
 	int				nb_times_e;
 	long			s_time;
 	bool			stop;

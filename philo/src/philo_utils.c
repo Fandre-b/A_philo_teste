@@ -62,7 +62,7 @@ bool	check_death(void)
 	{
 		timestamp = time_now();
 		pthread_mutex_lock(&args()->prio);
-		if (timestamp - args()->philos[i].last_meal >= args()->time_to_d)
+		if ( timestamp - args()->philos[i].last_meal >= args()->time_to_d)
 		{
 			if (!check_stop())
 				printf("%ld %d died\n", timestamp, i);
@@ -81,29 +81,30 @@ bool	check_death(void)
 bool	check_philo_death(t_philo *p)
 {
 	long	timestamp;
-	int comeu_n;
+	bool value;
 
-	pthread_mutex_lock(&args()->prio);
-	comeu_n = p->n_meals;
-	pthread_mutex_unlock(&args()->prio);
-
-	if (args()->nb_times_e > 0 && comeu_n >= args()->nb_times_e)
-		return false ;
-
+	value = true;
+	pthread_mutex_lock(&args()->prio);	
+	if (args()->nb_times_e > 0 && p->n_meals >= args()->nb_times_e)
+	{
+		printf("philo %i is full, cant die\n", p->id + 1);
+		value = false;
+	}
 	timestamp = time_now();
-	pthread_mutex_lock(&args()->prio);
-	if (timestamp - p->last_meal >= args()->time_to_d)
+	if (value && timestamp - p->last_meal >= args()->time_to_d)
 	{
 		if (!check_stop())
+		{
+			printf("ID: %d last meal was at timestamp: %ld, dude eaten %d times\n", p->id + 1, p->last_meal, p->n_meals);
 			printf("%ld %d died\n", timestamp, p->id + 1);
-		pthread_mutex_unlock(&args()->prio);
+		}
 		pthread_mutex_lock(&args()->god);
 		args()->stop = true;
 		pthread_mutex_unlock(&args()->god);
-		return (true);
+		value = true;
 	}
 	pthread_mutex_unlock(&args()->prio);
-	return (false);
+	value = false;
 }
 
 bool	check_meals(int meals)

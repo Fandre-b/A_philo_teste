@@ -20,7 +20,7 @@ bool	innit_threads(void)
 	while (i < args()->nb_philo)
 	{
 		if (pthread_create(args()->threads + i, NULL,
-						   &start, args()->philos + i))
+						   &start, &args()->philos[i]))
 			return (false);
 		i++;
 	}

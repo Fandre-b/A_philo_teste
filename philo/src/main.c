@@ -23,7 +23,7 @@ void	*start(void *arg)
 	if (args()->nb_philo == 1)
 		return (one_case(p), NULL);
 	if ((p->id % 2) == 0)
-		usleep(100);
+		usleep(100);	
 	while (1)
 	{
 		if (args()->nb_times_e > 0 && p->n_meals >= args()->nb_times_e)
@@ -45,25 +45,18 @@ int	main(int ac, char **av)
 {
 	int i;
 	if (pars(ac, av) == false)
-		return (1);
+	return (1);
 	if (!innit_everything())
-		return (2);
-	// monitor();
-	args()->s_time = get_time();
+	return (2);
 	pthread_mutex_lock(&args()->god);
-
+	args()->stop = false;
+	args()->s_time = get_time();
 	i = -1;
-	// TODO -antunes- Tentei Ver 
 	while (++i < args()->nb_philo)
 	{
-		pthread_mutex_lock(&args()->prio);
-		args()->philos[i].last_meal = time_now();
-		pthread_mutex_unlock(&args()->prio);
+		args()->philos[i].last_meal = args()->s_time;
 	}
-	args()->stop = false;
 	pthread_mutex_unlock(&args()->god);
-
-
 	clean();
 	return (0);
 }
