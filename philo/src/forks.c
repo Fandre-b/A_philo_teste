@@ -45,8 +45,8 @@ void	drop_forks(t_philo *p)
 {
 	if (p->id == 0)
 	{
-		pthread_mutex_unlock(&args()->forks[args()->nb_philo - 1]);
 		pthread_mutex_unlock(&args()->forks[p->id]);
+		pthread_mutex_unlock(&args()->forks[args()->nb_philo - 1]);
 	}
 	else
 	{

@@ -23,10 +23,6 @@ void	clean(void)
 			return ;
 		i++;
 	}
-	if (pthread_join(*args()->routine_thread, NULL))
-		return ;
-	while (!check_stop())
-		usleep(1000);
 	i = 0;
 	while (i < args()->nb_philo)
 	{
@@ -45,27 +41,30 @@ void	clean(void)
 
 bool	check_stop(void)
 {
-	bool val;
 	pthread_mutex_lock(&args()->god);
-	val = args()->stop;
+	if (args()->stop)
+	{
+		pthread_mutex_unlock(&args()->god);
+		return (true);
+	}
 	pthread_mutex_unlock(&args()->god);
-	return (val);
+	return (false);
 }
 
 bool	check_death(void)
 {
 	long	timestamp;
+	long	limit;
 	int		i;
 
 	i = 0;
 	while (i < args()->nb_philo)
 	{
-		timestamp = time_now();
 		pthread_mutex_lock(&args()->prio);
-		if ( timestamp - args()->philos[i].last_meal >= args()->time_to_d)
+		if (time_now() - args()->philos[i].last_meal >= args()->time_to_d)
 		{
 			if (!check_stop())
-				printf("%ld %d died\n", timestamp, i);
+				printf("%ld %d died\n", time_now(), i);
 			pthread_mutex_unlock(&args()->prio);
 			pthread_mutex_lock(&args()->god);
 			args()->stop = true;
@@ -76,35 +75,6 @@ bool	check_death(void)
 		i++;
 	}
 	return (false);
-}
-
-bool	check_philo_death(t_philo *p)
-{
-	long	timestamp;
-	bool value;
-
-	value = true;
-	pthread_mutex_lock(&args()->prio);	
-	if (args()->nb_times_e > 0 && p->n_meals >= args()->nb_times_e)
-	{
-		printf("philo %i is full, cant die\n", p->id + 1);
-		value = false;
-	}
-	timestamp = time_now();
-	if (value && timestamp - p->last_meal >= args()->time_to_d)
-	{
-		if (!check_stop())
-		{
-			printf("ID: %d last meal was at timestamp: %ld, dude eaten %d times\n", p->id + 1, p->last_meal, p->n_meals);
-			printf("%ld %d died\n", timestamp, p->id + 1);
-		}
-		pthread_mutex_lock(&args()->god);
-		args()->stop = true;
-		pthread_mutex_unlock(&args()->god);
-		value = true;
-	}
-	pthread_mutex_unlock(&args()->prio);
-	value = false;
 }
 
 bool	check_meals(int meals)
@@ -119,34 +89,31 @@ bool	check_meals(int meals)
 	return (false);
 }
 
-void*	monitor(void *arg)
+void	monitor(void)
 {
 	int		i;
 	int		meals;
 
-	(void)arg;
-	while (check_stop());
-	i = 0;
-	while (!check_stop())
+	while (1)
 	{
-		if (i == 0)
-			meals = 0;
-		// if (check_death())
-		if (check_philo_death(&args()->philos[i]))
+		i = 0;
+		meals = 0;
+		if (check_death())
 			break ;
-		if (args()->nb_times_e == 0)
+		if (args()->nb_times_e > 0)
 		{
-			continue;
+			pthread_mutex_lock(&args()->prio);
+			while (i < args()->nb_philo)
+			{
+				if (args()->philos[i].n_meals >= args()->nb_times_e)
+					meals++;
+				i++;
+			}
+			pthread_mutex_unlock(&args()->prio);
+			if (check_death())
+				break ;
+			if (check_meals(meals))
+				break ;
 		}
-		pthread_mutex_lock(&args()->prio);
-		if (args()->philos[i].n_meals >= args()->nb_times_e)
-			meals++;
-		pthread_mutex_unlock(&args()->prio);
-		i = (i + 1) % args()->nb_philo;
-		if (check_meals(meals))
-			break ;
-		// if (check_death())
-		// 	break ;
 	}
-	return (NULL);
 }

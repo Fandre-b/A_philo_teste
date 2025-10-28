@@ -28,7 +28,7 @@ typedef struct s_threads
 {
 	int		id;
 	int		n_meals;
-	long		last_meal;
+	int		last_meal;
 
 }		t_philo;
 
@@ -36,15 +36,14 @@ typedef struct s_threads
 typedef struct s_args
 {
 	int				nb_philo;
-	long				time_to_d;
-	long				time_to_e;
-	long				time_to_s;
+	int				time_to_d;
+	int				time_to_e;
+	int				time_to_s;
 	int				nb_times_e;
 	long			s_time;
 	bool			stop;
 	t_philo			*philos;
 	pthread_t		*threads;
-	pthread_t		*routine_thread;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	god;
 	pthread_mutex_t	prio;
@@ -76,9 +75,7 @@ bool	pars(int ac, char **av);
 void	clean(void);
 bool	check_stop(void);
 bool	check_death(void);
-void	*monitor(void *arg);
-
-bool	check_philo_death(t_philo *p);
+void	monitor(void);
 
 //routine functions
 void	*start(void *arg);
