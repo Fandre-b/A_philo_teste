@@ -81,6 +81,14 @@ bool	check_death(void)
 bool	check_philo_death(t_philo *p)
 {
 	long	timestamp;
+	int comeu_n;
+
+	pthread_mutex_lock(&args()->prio);
+	comeu_n = p->n_meals;
+	pthread_mutex_unlock(&args()->prio);
+
+	if (args()->nb_times_e > 0 && comeu_n >= args()->nb_times_e)
+		return false ;
 
 	timestamp = time_now();
 	pthread_mutex_lock(&args()->prio);
@@ -132,13 +140,12 @@ void*	monitor(void *arg)
 		pthread_mutex_lock(&args()->prio);
 		if (args()->philos[i].n_meals >= args()->nb_times_e)
 			meals++;
-		i = (i + 1) % args()->nb_philo;
 		pthread_mutex_unlock(&args()->prio);
+		i = (i + 1) % args()->nb_philo;
 		if (check_meals(meals))
 			break ;
 		// if (check_death())
 		// 	break ;
-		usleep(1000);
 	}
 	return (NULL);
 }
